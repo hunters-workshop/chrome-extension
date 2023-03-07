@@ -82,7 +82,7 @@ const App = () => {
 				<p>URL:</p>
 				<p>{url}</p>
 				<button onClick={sendTestMessage}>SEND MESSAGE</button>
-				<button onClick={sendRemoveMessage}>Remove logo</button>
+				<button onClick={sendRemoveMessage}>Follow all expired fans</button>
 				<p>Response from content:</p>
 				<p>{responseFromContent}</p>
 			</header>

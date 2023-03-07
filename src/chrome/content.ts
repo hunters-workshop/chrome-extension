@@ -10,9 +10,20 @@ const messagesFromReactAppListener = (message: ChromeMessage, sender: any, respo
 		response('Hello from content.js');
 	}
 
+	function getExpiredFollowers() {
+		console.log('made it in')
+		const expiredFollowers = document.getElementsByClassName('m-rounded m-flex m-space-between m-lg g-btn');
+		console.log(Array.from(expiredFollowers), 'array');
+		console.log(expiredFollowers, 'exf')
+		return Array.from(expiredFollowers);
+	}
+
+
+
 	if (sender.id === chrome.runtime.id && message.from === Sender.React && message.message === 'delete logo') {
-		const logo = document.getElementById('hplogo');
-		logo?.parentElement?.removeChild(logo);
+		const followers = getExpiredFollowers();
+		//@ts-ignore
+		followers.forEach(follower => follower.click())
 	}
 };
 
