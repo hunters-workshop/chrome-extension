@@ -1,14 +1,10 @@
 import { ChromeMessage, Sender } from '../types';
 
-const messagesFromReactAppListener = (message: ChromeMessage, sender: any, response: any) => {
+const autofanListener = (message: ChromeMessage, sender: any, response: any) => {
 	console.log('[content.js]. Message received', {
 		message,
 		sender,
 	});
-
-	if (sender.id === chrome.runtime.id && message.from === Sender.React && message.message === 'Hello from React') {
-		response('Hello from content.js');
-	}
 
 	function getExpiredFollowers() {
 		console.log('made it in')
@@ -18,16 +14,29 @@ const messagesFromReactAppListener = (message: ChromeMessage, sender: any, respo
 		return Array.from(expiredFollowers);
 	}
 
+	if (sender.id === chrome.runtime.id && message.from === Sender.React && message.message === 'get expired follower count') {
+		const expiredCount = document.getElementsByClassName('b-tabs__nav__text');
+		console.log(`${expiredCount[2].innerHTML}`)
+		response(`${expiredCount[2].innerHTML}`)
+	}
 
-
-	if (sender.id === chrome.runtime.id && message.from === Sender.React && message.message === 'delete logo') {
+	if (sender.id === chrome.runtime.id && message.from === Sender.React && message.message === 'auto follow') {
 		const followers = getExpiredFollowers();
+		console.log('followers 2', followers);
 		//@ts-ignore
 		followers.forEach(follower => follower.click())
 	}
 };
 
+chrome.runtime.onConnect.addListener(port => {
+  console.log('succeeded', port);
+ 
+  if (port.name === 'connected') {
+		chrome.runtime.onMessage.addListener(autofanListener);
+  }
+
+});
 /**
  * Fired when a message is sent from either an extension process or a content script.
  */
-chrome.runtime.onMessage.addListener(messagesFromReactAppListener);
+chrome.runtime.onMessage.addListener(autofanListener);
