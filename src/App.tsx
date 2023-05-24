@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import logo from './autofan.png';
+import { app } from './lib/firebase';
 
 import './App.css';
 import { ChromeMessage, Sender } from './types';
