@@ -1,7 +1,7 @@
 {
-	"name": "Hello Extensions",
+	"name": "AutoFan",
 	"description": "Base Level Extension",
-	"version": "1.0",
+	"version": "0.1.0",
 	"manifest_version": 3,
 	"action": {
 		"default_popup": "index.html",
@@ -12,14 +12,11 @@
 		"48": "logo192.png",
 		"128": "logo192.png"
 	},
-	"content_scripts": [
-		{
-			"matches": ["http://*/*", "https://*/*"],
-			"js": ["./static/js/content.js"],
-			"all_frames": false,
-			"run_at": "document_end"
-		}
-	],
+	"content_scripts": [{
+		"matches": ["*://*.onlyfans.com/*"],
+		"js": ["./static/js/content.js"],
+		"run_at": "document_end"
+	}],
 	"permissions": ["activeTab"],
 	"optional_host_permissions": ["*://*/*"]
 }

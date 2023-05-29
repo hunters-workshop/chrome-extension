@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
-import logo from './logo.svg';
-
+import logo from './autofan.png';
 import './App.css';
+import { SignInForm } from './components/login';
+import { Signup } from './components/signup';
 import { ChromeMessage, Sender } from './types';
 
 const App = () => {
+	const [page, setPage] = useState(0);
 	const [url, setUrl] = useState<string>('');
+	const [user, setUser] = useState<any>()
 	const [responseFromContent, setResponseFromContent] = useState<string>('');
-
+	const [expiredFollowers, setExpiredFollowers] = useState<string>('');
 	/**
 	 * Get current URL
 	 */
@@ -21,13 +24,16 @@ const App = () => {
 			});
 	}, []);
 
-	/**
-	 * Send message to the content script
-	 */
-	const sendTestMessage = () => {
+	useEffect(() => {
+		if (url === 'https://onlyfans.com/my/collections/user-lists/subscriptions/expired') {
+			getExpiredFollowerCount();
+		}
+	}, [url])
+
+	const getExpiredFollowerCount = () => {
 		const message: ChromeMessage = {
 			from: Sender.React,
-			message: 'Hello from React',
+			message: 'get expired follower count',
 		};
 
 		const queryInfo: chrome.tabs.QueryInfo = {
@@ -35,30 +41,20 @@ const App = () => {
 			currentWindow: true,
 		};
 
-		/**
-		 * We can't use "chrome.runtime.sendMessage" for sending messages from React.
-		 * For sending messages from React we need to specify which tab to send it to.
-		 */
 		chrome.tabs &&
 			chrome.tabs.query(queryInfo, (tabs) => {
 				const currentTabId = tabs[0].id;
-				/**
-				 * Sends a single message to the content script(s) in the specified tab,
-				 * with an optional callback to run when a response is sent back.
-				 *
-				 * The runtime.onMessage event is fired in each content script running
-				 * in the specified tab for the current extension.
-				 */
 				chrome.tabs.sendMessage(currentTabId!, message, (response) => {
-					setResponseFromContent(response);
+					console.log('res', response)
+					setExpiredFollowers(response);
 				});
 			});
 	};
 
-	const sendRemoveMessage = () => {
+	const followExpiredFans = () => {
 		const message: ChromeMessage = {
 			from: Sender.React,
-			message: 'delete logo',
+			message: 'auto follow',
 		};
 
 		const queryInfo: chrome.tabs.QueryInfo = {
@@ -74,17 +70,23 @@ const App = () => {
 				});
 			});
 	};
+
+	if (!user && page === 0) {
+		return <Signup setUser={setUser} switchPage={setPage}/>
+	}
+
+	if (!user && page === 1) {
+		return <SignInForm setUser={setUser} switchPage={setPage}/>
+	}
 
 	return (
-		<div className='App'>
-			<header className='App-header'>
+		<div className='App' >
+			<header className='App-header' style={{ padding: '1em' }} >
 				<img src={logo} className='App-logo' alt='logo' />
-				<p>URL:</p>
-				<p>{url}</p>
-				<button onClick={sendTestMessage}>SEND MESSAGE</button>
-				<button onClick={sendRemoveMessage}>Remove logo</button>
-				<p>Response from content:</p>
-				<p>{responseFromContent}</p>
+				<p> url: {url} </p>
+				<p> Currently have {expiredFollowers} expired followers</p>
+				<button onClick={getExpiredFollowerCount}>get expired count</button>
+				<button onClick={followExpiredFans} style={{ marginTop: '1em' }} >Follow all expired fans</button>
 			</header>
 		</div>
 	);
