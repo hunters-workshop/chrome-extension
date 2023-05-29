@@ -1,8 +1,8 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from 'react'
-import styles from "./styles.module.css";
 
-export const Signup = () => {
+//@ts-ignore
+export const Signup = ({ setUser, switchPage }) => {
   const auth = getAuth();
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -21,6 +21,8 @@ export const Signup = () => {
       .then((userCredential) => {
         console.log("user created");
         console.log(userCredential);
+        setUser(userCredential)
+        switchPage(2)
       })
       .catch((error) => {
         alert(error.message);
@@ -30,29 +32,27 @@ export const Signup = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.form_collection}>
-          <label className={styles.form_label}>Email</label>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email</label>
           <input
             type="email"
             name="email"
             onChange={(event) => handleChangeEmail(event)}
-            className={styles.form_input}
           />
         </div>
 
-        <div className={styles.form_collection}>
-          <label className={styles.form_label}>Password</label>
+        <div>
+          <label>Password</label>
           <input
             type="password"
             name="password"
             onChange={(event) => handleChangePassword(event)}
-            className={styles.form_input}
           />
         </div>
-        <button className={styles.form_submit}>Create Account</button>
+        <button>Create Account</button>
       </form>
-
+      <button onClick={() => switchPage(1)}>Login</button>
       <br></br>
     </div>
   )

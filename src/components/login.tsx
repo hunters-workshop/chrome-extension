@@ -1,10 +1,9 @@
 import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import React, { useState } from "react";
-import styles from "./styles.module.css";
 
 //@ts-ignore
-export function SignInForm({ signInWithGoogle, toggleSignIn }) {
+export function SignInForm({ setUser, switchPage }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,12 +30,8 @@ export function SignInForm({ signInWithGoogle, toggleSignIn }) {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        
-        if (!user.emailVerified) {
-          sendEmailVerification(user);
-
-          console.log('Email verification requested! Please check your email to verify')
-        }
+        setUser(user)
+        switchPage(2)
       })
       .catch((error) => {
         alert(error.message);
@@ -81,18 +76,18 @@ export function SignInForm({ signInWithGoogle, toggleSignIn }) {
           disabled={email == "" && password == ""}
           onClick={handleSubmit}
         />
-        <button
+{/*         <button
           onClick={signInWithGoogle}
         >
           Sign in with Google
-        </button>
+        </button> */}
 
         <div className="mt-28 w-full">
           <p className="text-xs text-center text-gray-200">
             Don't have an account?
           </p>
           <button
-            onClick={toggleSignIn}
+            onClick={() => switchPage(0)}
           >
             Sign Up
           </button>
